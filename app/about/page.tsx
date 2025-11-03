@@ -33,6 +33,18 @@ export default function AboutPage() {
                     priority
                   />
                 </div>
+                {/* 모토 */}
+                <div className="mt-6 text-center">
+                  <p className="text-base font-medium text-foreground italic leading-relaxed">
+                    AI가 진단을 내릴 때,
+                    <br />
+                    이해만으로는 부족하고,
+                    <br />
+                    기술만으로는 차갑다.
+                    <br />
+                    나는 그 둘을 잇는 사람. 🌿
+                  </p>
+                </div>
               </div>
 
               {/* 인사말 */}
@@ -229,22 +241,6 @@ export default function AboutPage() {
           </CardContent>
         </Card>
 
-        {/* 한 줄 다짐 */}
-        <Card className="bg-primary/5 border-primary/20">
-          <CardContent className="pt-6">
-            <p className="text-xl font-semibold text-foreground italic text-center">
-              AI가 진단을 내릴 때,
-              <br />
-              나는 그 안에서 '이해'를 찾는다. 🌿
-              <br /><br />
-              이해만으로는 부족하고,
-              <br />
-              기술만으로는 차갑다.
-              <br />
-              나는 그 둘을 잇는 사람. 🌿
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
