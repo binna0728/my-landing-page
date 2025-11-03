@@ -8,31 +8,72 @@ async function getProject(slugOrId: string) {
   const isNumeric = /^\d+$/.test(slugOrId);
   
   try {
-    // 서버 컴포넌트에서는 절대 URL 필요
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    let url = `${baseUrl}/api/projects?status=all`;
-    if (isNumeric) {
-      url += `&id=${slugOrId}`;
-    } else {
-      // slug는 이미 URL에 포함되어 있으므로 디코딩 후 다시 인코딩
-      const decodedSlug = decodeURIComponent(slugOrId);
-      url += `&slug=${encodeURIComponent(decodedSlug)}`;
-    }
+    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) {
-      console.error('API response not OK:', res.status, res.statusText);
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      console.error('Supabase 환경변수 누락');
       return null;
     }
+
+    // Supabase에 직접 연결
+    let url = `${SUPABASE_URL}/rest/v1/projects?select=*`;
+    if (isNumeric) {
+      url += `&id=eq.${slugOrId}`;
+    } else {
+      // slug는 디코딩 후 다시 인코딩
+      try {
+        const decodedSlug = decodeURIComponent(slugOrId);
+        url += `&slug=eq.${encodeURIComponent(decodedSlug)}`;
+      } catch {
+        url += `&slug=eq.${encodeURIComponent(slugOrId)}`;
+      }
+    }
+    
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      cache: 'no-store',
+    });
+    
+    if (!res.ok) {
+      console.error('Supabase API error:', res.status, res.statusText);
+      return null;
+    }
+    
     const data = await res.json();
-    const list = data.projects || [];
-    const project = list[0] || null;
+    const projects = Array.isArray(data) ? data : [];
+    const project = projects[0] || null;
     
     if (!project) {
       console.error(`프로젝트를 찾을 수 없습니다: ${slugOrId} (isNumeric: ${isNumeric})`);
+      return null;
     }
     
-    return project;
+    // 데이터 형식 변환
+    return {
+      id: project.id,
+      title: project.title || '',
+      description: project.description || '',
+      content: project.content || '',
+      category: project.category || 'project',
+      author: project.author || '김빛나',
+      slug: project.slug || '',
+      tags: Array.isArray(project.tags) ? project.tags : (typeof project.tags === 'string' ? JSON.parse(project.tags || '[]') : []),
+      featured: project.featured || false,
+      thumbnail_url: project.thumbnail_url || null,
+      images: Array.isArray(project.images) ? project.images : (typeof project.images === 'string' ? JSON.parse(project.images || '[]') : []),
+      project_date: project.project_date || null,
+      project_period: project.project_period || null,
+      award: project.award || null,
+      link_url: project.link_url || null,
+      github_url: project.github_url || null,
+      view_count: project.view_count || 0,
+      created_at: project.created_at || new Date().toISOString(),
+      status: project.status || 'published',
+    };
   } catch (error) {
     console.error('Failed to fetch project:', error);
     return null;
