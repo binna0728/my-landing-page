@@ -6,9 +6,11 @@ export const metadata = {
   description: "기술 블로그 포스트 모음",
 };
 
-// 동적 렌더링 강제 (SSR)
+// 동적 렌더링 강제 (SSR) - ISR 방지
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 export const revalidate = 0;
+export const runtime = 'nodejs';
 
 async function getBlogPosts() {
   try {
