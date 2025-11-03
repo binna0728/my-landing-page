@@ -13,30 +13,22 @@ export const metadata = {
 
 async function getBlogPost(slug: string) {
   try {
-    // 3000과 3001 포트 모두 시도
-    const ports = ['3000', '3001'];
+    // 서버 컴포넌트에서는 절대 URL 필요
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/blog/posts?status=published`, {
+      cache: 'no-store',
+    });
 
-    for (const port of ports) {
-      try {
-        const res = await fetch(`http://localhost:${port}/api/blog/posts?status=published`, {
-          cache: 'no-store',
-          timeout: 5000
-        });
-
-        if (!res.ok) continue;
-
-        const data = await res.json();
-        const posts = data.posts || [];
-        const post = posts.find((p: any) => p.slug === slug || p.id.toString() === slug);
-
-        if (post) return post;
-      } catch (e) {
-        // 다음 포트 시도
-        continue;
-      }
+    if (!res.ok) {
+      console.error('API response not OK:', res.status, res.statusText);
+      return null;
     }
 
-    return null;
+    const data = await res.json();
+    const posts = data.posts || [];
+    const post = posts.find((p: any) => p.slug === slug || p.id.toString() === slug);
+
+    return post || null;
   } catch (error) {
     console.error('Error fetching blog post:', error);
     return null;
