@@ -12,7 +12,10 @@ async function getProject(slugOrId: string) {
     const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase 환경변수 누락');
+      console.error('Supabase 환경변수 누락:', {
+        hasUrl: !!SUPABASE_URL,
+        hasKey: !!SUPABASE_ANON_KEY,
+      });
       return null;
     }
 
@@ -34,12 +37,19 @@ async function getProject(slugOrId: string) {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
       },
       cache: 'no-store',
     });
     
     if (!res.ok) {
-      console.error('Supabase API error:', res.status, res.statusText);
+      const errorText = await res.text().catch(() => 'Unknown error');
+      console.error('Supabase API error:', {
+        status: res.status,
+        statusText: res.statusText,
+        error: errorText,
+        slugOrId,
+      });
       return null;
     }
     

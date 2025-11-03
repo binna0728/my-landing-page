@@ -11,7 +11,12 @@ async function getBlogPosts() {
     const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase 환경변수 누락');
+      console.error('Supabase 환경변수 누락:', {
+        hasUrl: !!SUPABASE_URL,
+        hasKey: !!SUPABASE_ANON_KEY,
+        url: SUPABASE_URL ? '설정됨' : '없음',
+        key: SUPABASE_ANON_KEY ? '설정됨' : '없음',
+      });
       return [];
     }
 
@@ -22,17 +27,26 @@ async function getBlogPosts() {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
       },
       cache: 'no-store',
     });
 
     if (!res.ok) {
-      console.error('Supabase API error:', res.status, res.statusText);
+      const errorText = await res.text().catch(() => 'Unknown error');
+      console.error('Supabase API error:', {
+        status: res.status,
+        statusText: res.statusText,
+        error: errorText,
+        url: url.replace(SUPABASE_ANON_KEY, '[HIDDEN]'),
+      });
       return [];
     }
 
     const data = await res.json();
     const posts = Array.isArray(data) ? data : [];
+
+    console.log(`✅ 블로그 포스트 ${posts.length}개 조회 성공`);
 
     // 데이터 형식 변환
     return posts.map((post: any) => ({
@@ -49,8 +63,12 @@ async function getBlogPosts() {
       status: post.status,
       view_count: post.view_count || 0,
     }));
-  } catch (error) {
-    console.error('Failed to fetch blog posts:', error);
+  } catch (error: any) {
+    console.error('Failed to fetch blog posts:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    });
     return [];
   }
 }

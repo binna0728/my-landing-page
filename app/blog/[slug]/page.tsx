@@ -17,7 +17,10 @@ async function getBlogPost(slug: string) {
     const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase 환경변수 누락');
+      console.error('Supabase 환경변수 누락:', {
+        hasUrl: !!SUPABASE_URL,
+        hasKey: !!SUPABASE_ANON_KEY,
+      });
       return null;
     }
 
@@ -28,12 +31,19 @@ async function getBlogPost(slug: string) {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
       },
       cache: 'no-store',
     });
 
     if (!res.ok) {
-      console.error('Supabase API error:', res.status, res.statusText);
+      const errorText = await res.text().catch(() => 'Unknown error');
+      console.error('Supabase API error:', {
+        status: res.status,
+        statusText: res.statusText,
+        error: errorText,
+        slug,
+      });
       return null;
     }
 
@@ -42,6 +52,7 @@ async function getBlogPost(slug: string) {
     const post = posts[0] || null;
 
     if (!post) {
+      console.error(`블로그 포스트를 찾을 수 없습니다: ${slug}`);
       return null;
     }
 
@@ -60,8 +71,12 @@ async function getBlogPost(slug: string) {
       status: post.status,
       view_count: post.view_count || 0,
     };
-  } catch (error) {
-    console.error('Error fetching blog post:', error);
+  } catch (error: any) {
+    console.error('Error fetching blog post:', {
+      message: error?.message,
+      stack: error?.stack,
+      slug,
+    });
     return null;
   }
 }
