@@ -101,8 +101,8 @@ export default async function BlogPostPage({
                 h2: ({node, ...props}) => <h2 className="text-2xl font-bold mt-6 mb-3" {...props} />,
                 h3: ({node, ...props}) => <h3 className="text-xl font-bold mt-4 mb-2" {...props} />,
                 code: (props: any) => {
-                  // react-markdown v10에서는 inline prop이 전달되지 않으므로 className으로 판단
-                  const isInline = !props?.className || !props.className.includes('language-');
+                  const className = props?.className || '';
+                  const isInline = !className || !className.includes('language-');
                   if (isInline) {
                     return <code className="bg-muted px-2 py-1 rounded text-sm" {...props} />;
                   }
