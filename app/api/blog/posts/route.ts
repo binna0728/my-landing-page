@@ -92,10 +92,10 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    // slug 생성
+    // slug 생성 (ASCII만 사용)
     const slug = body.slug || body.title
       .toLowerCase()
-      .replace(/[^a-z0-9가-힣\s-]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')  // 한글 제거, ASCII만 허용
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .trim();
@@ -162,7 +162,7 @@ export async function PATCH(request: NextRequest) {
     if (updateData.title && !updateData.slug) {
       updateData.slug = updateData.title
         .toLowerCase()
-        .replace(/[^a-z0-9가-힣\s-]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')  // 한글 제거, ASCII만 허용
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
         .trim();

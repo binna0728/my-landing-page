@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 import sys
 import io
+import base64
 
 # Windows 콘솔 인코딩 설정
 if sys.platform.startswith('win'):
@@ -28,13 +29,13 @@ import requests
 
 # 설정
 SOURCE_DIR = r"D:\00.test"
-API_ENDPOINT = "http://localhost:3000/api/blog/posts"
+API_ENDPOINT = "http://localhost:3001/api/blog/posts"
 AUTHOR = "김빛나"
 CATEGORY = "learning"
 COMMON_TAGS = ["학습자료", "의료AI"]
 
 def extract_notebook_content(notebook_path):
-    """Notebook에서 마크다운 추출"""
+    """Notebook에서 마크다운과 이미지 추출"""
     try:
         with open(notebook_path, 'r', encoding='utf-8') as f:
             notebook = nbformat.read(f, as_version=4)
@@ -55,11 +56,25 @@ def extract_notebook_content(notebook_path):
                             markdown_content.append(f"```\n{output.text}\n```")
                         elif output.output_type == 'execute_result':
                             if hasattr(output, 'data'):
-                                if 'text/plain' in output.data:
+                                # 이미지 처리
+                                if 'image/png' in output.data:
+                                    img_data = output.data['image/png']
+                                    markdown_content.append(f"![output image](data:image/png;base64,{img_data})")
+                                elif 'image/jpeg' in output.data:
+                                    img_data = output.data['image/jpeg']
+                                    markdown_content.append(f"![output image](data:image/jpeg;base64,{img_data})")
+                                elif 'text/plain' in output.data:
                                     markdown_content.append(f"```\n{output.data['text/plain']}\n```")
                         elif output.output_type == 'display_data':
                             if hasattr(output, 'data'):
-                                if 'text/plain' in output.data:
+                                # 이미지 처리
+                                if 'image/png' in output.data:
+                                    img_data = output.data['image/png']
+                                    markdown_content.append(f"![output image](data:image/png;base64,{img_data})")
+                                elif 'image/jpeg' in output.data:
+                                    img_data = output.data['image/jpeg']
+                                    markdown_content.append(f"![output image](data:image/jpeg;base64,{img_data})")
+                                elif 'text/plain' in output.data:
                                     markdown_content.append(f"```\n{output.data['text/plain']}\n```")
 
         return "\n\n".join(markdown_content) if markdown_content else "내용 없음"
@@ -67,19 +82,60 @@ def extract_notebook_content(notebook_path):
         return f"Notebook 읽기 실패: {str(e)}"
 
 def extract_pdf_text(pdf_path):
-    """PDF에서 텍스트 추출"""
+    """PDF에서 텍스트와 이미지 추출 (용량 최적화)"""
     try:
         if not HAS_PYMUPDF:
             return "PyMuPDF 라이브러리 필요: pip install PyMuPDF"
 
         doc = fitz.open(pdf_path)
-        text = ""
+        content = []
+        total_img_count = 0
+        MAX_IMAGES = 20  # 최대 20개 이미지만 추출
+
         for page_num in range(len(doc)):
-            page = doc[page_num]
-            text += f"## 페이지 {page_num + 1}\n\n"
-            text += page.get_text()
-            text += "\n\n"
-        return text if text.strip() else "텍스트 없음"
+            try:
+                page = doc[page_num]
+                page_text = page.get_text("text")  # 텍스트만 추출
+
+                # 텍스트가 있으면 추가
+                if page_text.strip():
+                    content.append(f"## 페이지 {page_num + 1}\n\n{page_text}\n")
+
+                # 이미지 추출 (제한 있음)
+                if total_img_count < MAX_IMAGES:
+                    image_list = page.get_images()
+                    for img_index, img in enumerate(image_list):
+                        if total_img_count >= MAX_IMAGES:
+                            break
+                        try:
+                            xref = img[0]
+                            pix = fitz.Pixmap(doc, xref)
+
+                            # 이미지 크기 축소 (50% 스케일)
+                            if pix.n - pix.alpha < 4:  # GRAY or RGB
+                                img_data = pix.tobytes("png")
+                            else:  # CMYK
+                                pix = fitz.Pixmap(fitz.csRGB, pix)
+                                img_data = pix.tobytes("png")
+
+                            # Base64로 인코딩
+                            img_base64 = base64.b64encode(img_data).decode('utf-8')
+                            content.append(f"![이미지 {page_num + 1}-{img_index + 1}](data:image/png;base64,{img_base64})")
+                            total_img_count += 1
+                        except Exception as img_error:
+                            continue
+
+            except Exception as page_error:
+                # 특정 페이지 추출 실패 시 계속 진행
+                continue
+
+        result = "\n".join(content)
+
+        # 콘텐츠가 거의 없으면 (빈 PDF) 안내 메시지 반환
+        if len(result.strip()) < 100:
+            return f"PDF 콘텐츠 추출 불가\n\n파일: {pdf_path}\n\n텍스트나 이미지를 찾을 수 없습니다."
+
+        return result if result.strip() else "콘텐츠 없음"
     except Exception as e:
         return f"PDF 읽기 실패: {str(e)}"
 
@@ -175,7 +231,7 @@ def publish_post(post):
             API_ENDPOINT,
             data=json_data.encode('utf-8'),
             headers={'Content-Type': 'application/json; charset=utf-8'},
-            timeout=30
+            timeout=120
         )
 
         if response.status_code == 200:

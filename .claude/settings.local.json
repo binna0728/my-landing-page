@@ -16,7 +16,13 @@
       "Bash(echo:*)",
       "Bash(done)",
       "Bash(npm install:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''''EOF''''\n블로그 마크다운 렌더링 개선 및 자동 포스팅 스크립트\n\n- react-markdown + remark-gfm 라이브러리 추가\n- 포스트 상세 페이지 마크다운 렌더링 개선\n- Python 스크립트로 D:/00.test 폴더 학습 자료 자동 포스팅 (17개 포스트)\n- 한글 인코딩 완벽 처리\n- Jupyter Notebook과 PDF 컨텐츠 자동 추출\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(netstat:*)",
+      "Bash(lsof:*)",
+      "Bash(tasklist:*)",
+      "Bash(for id in {75..58})",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
