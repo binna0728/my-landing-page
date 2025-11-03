@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getSupabase } from "@/lib/supabase";
 
 export const metadata = {
   title: "블로그 포스트 — AI 헬스케어 초격차 캠프",
@@ -14,40 +13,27 @@ export const metadata = {
 
 async function getBlogPost(slug: string) {
   try {
-    const supabase = getSupabase();
+    // API 라우트를 통해 데이터 가져오기
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     
-    const { data: posts, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('slug', slug)
-      .limit(1);
+    const url = `${baseUrl}/api/blog/posts?status=all&slug=${encodeURIComponent(slug)}`;
+    
+    const res = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    if (error) {
-      console.error('Supabase error:', error);
+    if (!res.ok) {
+      console.error('API response not OK:', res.status, res.statusText);
       return null;
     }
 
-    if (!posts || posts.length === 0) {
-      return null;
-    }
-
-    const post = posts[0];
-
-    // 데이터 형식 변환
-    return {
-      id: post.id,
-      title: post.title,
-      description: post.description || post.excerpt || '',
-      content: post.content,
-      date: post.publish_date || post.created_at,
-      tags: post.tags || [],
-      slug: post.slug,
-      category: post.category,
-      author: post.author,
-      featured: post.featured,
-      status: post.status,
-      view_count: post.view_count || 0,
-    };
+    const data = await res.json();
+    const posts = data.posts || [];
+    return posts[0] || null;
   } catch (error: any) {
     console.error('Error fetching blog post:', {
       message: error?.message,

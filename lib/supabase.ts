@@ -9,7 +9,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export function getSupabase() {
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase 환경 변수가 필요합니다.')
+    // 환경변수가 없으면 빈 클라이언트 반환하지 않고 null 반환
+    // 대신 호출하는 쪽에서 처리하도록 함
+    return null as any;
   }
   
   return createClient(supabaseUrl, supabaseAnonKey)

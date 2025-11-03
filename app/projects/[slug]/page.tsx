@@ -2,37 +2,44 @@ import React from "react";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getSupabase } from "@/lib/supabase";
 
 async function getProject(slugOrId: string) {
   // 숫자면 ID로, 아니면 slug로 조회
   const isNumeric = /^\d+$/.test(slugOrId);
   
   try {
-    const supabase = getSupabase();
+    // API 라우트를 통해 데이터 가져오기
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     
-    let query = supabase.from('projects').select('*');
-    
+    let url = `${baseUrl}/api/projects?status=all`;
     if (isNumeric) {
-      query = query.eq('id', slugOrId);
+      url += `&id=${slugOrId}`;
     } else {
-      // slug는 디코딩
       try {
         const decodedSlug = decodeURIComponent(slugOrId);
-        query = query.eq('slug', decodedSlug);
+        url += `&slug=${encodeURIComponent(decodedSlug)}`;
       } catch {
-        query = query.eq('slug', slugOrId);
+        url += `&slug=${encodeURIComponent(slugOrId)}`;
       }
     }
     
-    const { data: projects, error } = await query.limit(1);
+    const res = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     
-    if (error) {
-      console.error('Supabase error:', error);
+    if (!res.ok) {
+      console.error('API response not OK:', res.status, res.statusText);
       return null;
     }
     
-    if (!projects || projects.length === 0) {
+    const data = await res.json();
+    const projects = data.projects || [];
+    
+    if (projects.length === 0) {
       console.error(`프로젝트를 찾을 수 없습니다: ${slugOrId} (isNumeric: ${isNumeric})`);
       return null;
     }

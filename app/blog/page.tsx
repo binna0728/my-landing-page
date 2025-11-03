@@ -1,5 +1,4 @@
 import { BlogList } from "@/components/blog/blog-list";
-import { getSupabase } from "@/lib/supabase";
 
 export const metadata = {
   title: "블로그 — AI 헬스케어 초격차 캠프",
@@ -8,38 +7,26 @@ export const metadata = {
 
 async function getBlogPosts() {
   try {
-    const supabase = getSupabase();
+    // API 라우트를 통해 데이터 가져오기 (환경변수 문제 회피)
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     
-    const { data: posts, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('status', 'published')
-      .order('publish_date', { ascending: false });
+    const url = `${baseUrl}/api/blog/posts?status=published`;
+    
+    const res = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    if (error) {
-      console.error('Supabase error:', error);
+    if (!res.ok) {
+      console.error('API response not OK:', res.status);
       return [];
     }
 
-    if (!posts) {
-      return [];
-    }
-
-    // 데이터 형식 변환
-    return posts.map((post: any) => ({
-      id: post.id,
-      title: post.title,
-      description: post.description || post.excerpt || '',
-      content: post.content,
-      date: post.publish_date || post.created_at,
-      tags: post.tags || [],
-      slug: post.slug,
-      category: post.category,
-      author: post.author,
-      featured: post.featured,
-      status: post.status,
-      view_count: post.view_count || 0,
-    }));
+    const data = await res.json();
+    return data.posts || [];
   } catch (error: any) {
     console.error('Failed to fetch blog posts:', {
       message: error?.message,
