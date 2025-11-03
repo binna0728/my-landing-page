@@ -13,52 +13,20 @@ export const metadata = {
 
 async function getBlogPost(slug: string) {
   try {
-    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase 환경변수 누락');
-      return null;
-    }
-
-    // Supabase에 직접 연결
-    const url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*&slug=eq.${encodeURIComponent(slug)}`;
-    
-    const res = await fetch(url, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      },
+    // 서버 컴포넌트에서는 절대 URL 사용
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/blog/posts?status=all&slug=${encodeURIComponent(slug)}`, {
       cache: 'no-store',
     });
 
     if (!res.ok) {
-      console.error('Supabase API error:', res.status, res.statusText);
+      console.error('API response not OK:', res.status, res.statusText);
       return null;
     }
 
     const data = await res.json();
-    const posts = Array.isArray(data) ? data : [];
-    const post = posts[0] || null;
-
-    if (!post) {
-      return null;
-    }
-
-    // 데이터 형식 변환
-    return {
-      id: post.id,
-      title: post.title,
-      description: post.description || post.excerpt || '',
-      content: post.content,
-      date: post.publish_date || post.created_at,
-      tags: post.tags || [],
-      slug: post.slug,
-      category: post.category,
-      author: post.author,
-      featured: post.featured,
-      status: post.status,
-    };
+    const posts = data.posts || [];
+    return posts[0] || null;
   } catch (error) {
     console.error('Error fetching blog post:', error);
     return null;
