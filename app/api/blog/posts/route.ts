@@ -12,14 +12,7 @@ export async function GET(request: Request) {
     const offset = searchParams.get("offset");
     const status = searchParams.get("status") || "published";
 
-    // Supabase 환경 변수가 없으면 빈 배열 반환
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase 환경변수 누락:', { 
-        hasUrl: !!SUPABASE_URL, 
-        hasKey: !!SUPABASE_ANON_KEY 
-      });
-      return NextResponse.json({ posts: [], total: 0 }, { status: 200 });
-    }
+    // 기본값이 설정되어 있으므로 항상 Supabase에 연결 시도
 
     let url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*&order=publish_date.desc`;
     

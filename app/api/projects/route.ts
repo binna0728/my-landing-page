@@ -6,10 +6,7 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 
 export async function GET(request: Request) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return NextResponse.json({ projects: [], total: 0, error: "Missing env vars" }, { status: 200 });
-    }
-
+    // 기본값이 설정되어 있으므로 항상 Supabase에 연결 시도
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || "published";
     const id = searchParams.get("id");
