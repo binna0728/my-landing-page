@@ -1,18 +1,47 @@
+"use client";
+
 import { BlogList } from "@/components/blog/blog-list";
-import { createClient } from '@supabase/supabase-js';
+import { useEffect, useState } from "react";
 
-export const metadata = {
-  title: "블로그 — AI 헬스케어 초격차 캠프",
-  description: "기술 블로그 포스트 모음",
-};
+export default function BlogPage() {
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-// 동적 렌더링 강제 (SSR) - ISR 방지
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-export const revalidate = 0;
-export const runtime = 'nodejs';
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await fetch('/api/blog/posts?status=published');
+        if (!res.ok) {
+          console.error('API response not OK:', res.status);
+          setPosts([]);
+          setLoading(false);
+          return;
+        }
+        const data = await res.json();
+        setPosts(data.posts || []);
+      } catch (error: any) {
+        console.error('Failed to fetch blog posts:', error);
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchPosts();
+  }, []);
 
-async function getBlogPosts() {
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-7xl mx-auto text-center">
+          <p>블로그 포스트를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <BlogList initialPosts={posts} />;
+}
   try {
     // 환경변수 확인
     const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://udimchcvervbxcnqjrcl.supabase.co';
