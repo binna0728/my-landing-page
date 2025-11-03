@@ -1,0 +1,56 @@
+# Cursor Rules
+
+## 프로젝트 스타일 가이드
+- TypeScript 사용
+- Next.js App Router 사용
+- Tailwind CSS로 스타일링
+- shadcn/ui 컴포넌트 사용
+- 반응형 디자인 필수
+
+## Supabase 기반 게시판 생성 프롬프트
+
+새로운 Supabase 기반 게시판을 만들 때 아래 프롬프트를 사용하세요:
+
+```
+Supabase 기반 게시판 시스템을 구축해주세요.
+
+게시판 정보:
+- 게시판명: [게시판명]
+- 테이블명: [테이블명]
+- API 경로: /api/[게시판명]
+- 페이지 경로: /[게시판명]
+- 카테고리: [카테고리1, 카테고리2, 카테고리3] (예: ["공지사항", "자료실", "Q&A"])
+- 컬러 테마: [색상명] (예: "purple", "blue", "green")
+
+구현 사항:
+1. Supabase SQL 스크립트 (테이블 생성, 인덱스, 샘플 데이터)
+2. lib/supabase.ts 파일 (이미 있으면 확인만)
+3. app/api/[게시판명]/route.ts (GET, POST, PATCH, DELETE)
+4. app/[게시판명]/page.tsx (메인 리스트 페이지)
+5. app/[게시판명]/[category]/[slug]/page.tsx (상세 페이지)
+6. components/[게시판명]/[게시판명]-write-dialog.tsx (글 작성 다이얼로그)
+
+요구사항:
+- 기존 블로그(/blog)와 동일한 UI/UX 패턴 유지
+- 검색, 카테고리 필터, 페이지네이션 기능
+- CRUD 기능 모두 구현
+- 마크다운 지원
+- 반응형 디자인
+- 로딩 상태 및 에러 처리
+
+참고 파일:
+- app/api/blog/posts/route.ts
+- app/blog/page.tsx
+- components/sections/ 디렉토리의 기존 컴포넌트들
+
+.env.local에 필요한 환경 변수:
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+## 코드 스타일
+- 함수형 컴포넌트 사용
+- "use client"는 클라이언트 컴포넌트에만
+- async/await 사용
+- 에러 처리는 try-catch로
+- 타입 안정성 유지

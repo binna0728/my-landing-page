@@ -1,0 +1,11 @@
+{
+  "title": "D:/00.test 아카이브를 블로그 포스트로: 의료 AI 기록 파이프라인 v0.1",
+  "description": "로컬 폴더의 PDF·ipynb를 주간 포스팅으로 전환하는 자동화 흐름과 첫 적용",
+  "content": "# D:/00.test 아카이브를 블로그 포스트로: 의료 AI 기록 파이프라인 v0.1\n\n의료 AI 공부의 대부분을 D:/00.test 폴더에 쌓아 왔다. 읽은 PDF와 실행한 ipynb가 늘어날수록, 정작 공유와 피드백은 늦어진다. 이제 이 아카이브를 **주간 포스트**로 전환한다. 이해만으로는 부족하고, 기술만으로는 차갑다. 기록이 그 둘을 잇는다.\n\n## 왜 중요한가\n\n의료 AI의 신뢰는 재현에서 시작된다. 파일과 숫자만 남기면 맥락이 빠진다. **선택 이유와 한계, 다음 실험**이 글로 남아야 연구가 앞으로 간다.\n\n- 폴더 속 산출물을 **주제별 글**로 재구성\n- 노트북은 **핵심 셀·결과 지표** 중심 요약\n- PDF는 **하이라이트 인용 + 내 해석**으로 전환\n\n## 접근 방식 / 사용 기술\n\n- 수집: 로컬 D:/00.test 스캔(*.pdf, *.ipynb)\n- 변환: `nbconvert`로 md 생성, 결과 그래프는 이미지로 내보내기\n- 인용: PyMuPDF로 하이라이트 추출 후 한 줄 코멘트 덧붙이기\n- 게시: Next.js API로 업로드(카테고리/태그 규칙화)\n\n```python\n# 1) ipynb -> md\n!jupyter nbconvert --to markdown \"D:/00.test/notebooks/*.ipynb\" --output-dir \"D:/00.test/exports\"\n\n# 2) 간단 스캐너 (폴더 내 파일 메타 취합)\nimport os, glob\nbase = r\"D:/00.test\"\nfiles = glob.glob(base+\"/**/*.pdf\", recursive=True) + glob.glob(base+\"/**/*.ipynb\", recursive=True)\nprint(len(files), \"files found\")\n```\n\n## 배운 점\n\n- 결과보다 **선택의 이유**가 다음 실험을 만든다\n- 지표는 한 줄로 명확하게(AUC, Dice 등); 그래프는 보조다\n- 기록은 나를 위한 메모가 아니라 **타인의 재현**을 위한 인터페이스다\n\n## 다음 단계\n\n- 주간 큐레이션 룰: 영상전처리, XAI(Grad-CAM/SHAP), 데이터 불균형\n- 변환 자동화 스크립트(v0.2): 태그·카테고리 자동 매핑\n- 각 글에 **데이터 출처/한계/윤리** 고지 템플릿 적용\n\n## 참고 자료\n\n- nbconvert: https://nbconvert.readthedocs.io\n- PyMuPDF: https://pymupdf.readthedocs.io\n\n---\n\n이해만으로는 부족하고, 기술만으로는 차갑다. 나는 그 둘을 잇는 사람.",
+  "category": "project",
+  "author": "김빛나",
+  "featured": true,
+  "tags": ["의료AI", "포트폴리오", "Jupyter", "PDF", "자동화", "XAI"],
+  "status": "published",
+  "publish_date": "2025-11-03T00:00:00.000Z"
+}
