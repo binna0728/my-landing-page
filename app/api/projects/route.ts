@@ -84,9 +84,6 @@ export async function GET(request: Request) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return NextResponse.json({ error: 'Supabase 설정이 필요합니다.' }, { status: 500 });
-    }
     const body = await request.json();
     const slug = body.slug || body.title?.toLowerCase().replace(/[^a-z0-9가-힣\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
     const response = await fetch(`${SUPABASE_URL}/rest/v1/projects`, {
@@ -112,9 +109,6 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return NextResponse.json({ error: 'Supabase 설정이 필요합니다.' }, { status: 500 });
-    }
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const body = await request.json();
@@ -139,9 +133,6 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return NextResponse.json({ error: 'Supabase 설정이 필요합니다.' }, { status: 500 });
-    }
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 });

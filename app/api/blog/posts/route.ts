@@ -91,10 +91,6 @@ export async function GET(request: Request) {
 // POST: 새 블로그 포스트 작성
 export async function POST(request: NextRequest) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return NextResponse.json({ error: 'Supabase 설정이 필요합니다.' }, { status: 500 });
-    }
-
     const body = await request.json();
 
     // slug 생성 (ASCII만 사용)
@@ -150,10 +146,6 @@ export async function POST(request: NextRequest) {
 // PATCH: 블로그 포스트 수정
 export async function PATCH(request: NextRequest) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return NextResponse.json({ error: 'Supabase 설정이 필요합니다.' }, { status: 500 });
-    }
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const body = await request.json();
@@ -214,10 +206,6 @@ export async function PATCH(request: NextRequest) {
 // DELETE: 블로그 포스트 삭제
 export async function DELETE(request: NextRequest) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return NextResponse.json({ error: 'Supabase 설정이 필요합니다.' }, { status: 500 });
-    }
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
