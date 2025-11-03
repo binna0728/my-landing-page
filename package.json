@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check-dns": "node scripts/check-dns.mjs"
+    "check-dns": "node scripts/check-dns.mjs",
+    "import:posts": "node scripts/import_posts.mjs",
+    "import:project": "node scripts/import_project_from_dir.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

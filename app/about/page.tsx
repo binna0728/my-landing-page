@@ -73,7 +73,7 @@ export default function AboutPage() {
                   발표 울렁증을 극복하기 위해 시작한 코딩 강의는<br />
                   씨큐브 중계센터의 강사로 이어졌고,<br />
                   지금은 부모님이 내어주신 강원도 춘천의 작은 원룸에서<br />
-                  '코코딩랩'이라는 이름으로 코딩 공부방을 운영하고 있습니다.
+                  '<a href="https://www.cocodinglab.dev/" target="_blank" rel="noopener noreferrer" className="underline decoration-dashed underline-offset-4 text-primary hover:text-primary/80">코코딩랩</a>'이라는 이름으로 코딩 공부방을 운영하고 있습니다.
                 </p>
                 <p className="text-lg leading-relaxed text-foreground">
                   아직은 부족하고,<br />

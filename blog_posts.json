@@ -1,0 +1,21 @@
+{
+    "posts": [
+        {
+            "id": 212,
+            "title": "python - 0925",
+            "description": "python\uc5d0\uc815\uc5d0\ud53c 1\uc77c\uce58 \uc5b4\ud130\uc5d0\uc608\ud53c \uc5d0\uc549\uc608\ud50c",
+            "content": "## 0925\n\n```python\nheight = int(input(\"\uc2e0\uc7a5\uc744 \uc5d0\ud589\uc628\uc2e0\ub2c8 \uc785\ub825\ud574 \uc8fc\uc138\uc694: \"))\nweight = int(input(\"\ucc28\u0432\ub6ae\ud55c\uc744 \uc5d0\ud589\uc628\uc2e0\ub2c8 \uc785\ub825\ud574 \uc8fc\uc138\uc694: \"))\n\nBMI = (weight/(height/100)**2)\nprint(round(BMI, 2))\n```\n\n```\n22.04\n\n```\n\n```python\n\uc5d0\uc608\u7531\ud53c = input(\"\uc5d0\uc608\u7531\uc608\ud53c \uc5d0\ud589\uc628\uc2e0\ub2c8 \uc785\ub825\ud574 \uc8fc\uc138\uc694 : \")\n\uc5f0\uc608\uc5d0\uc608 = int(input(\"\uc5f0\uc608\uc5d0\uc608\ud53c \uc5d0\ud589\uc628\uc2e0\ub2c8 \uc785\ub825\ud574 \uc8fc\uc138\uc694 : \"))\n\ud798\uacf8\ubfbd = input(\"\ud798\uacf8\ubfbd\ud53c \uc5d0\ud589\uc628\uc2e0\ub2c8 \uc785\ub825\ud574 \uc8fc\uc138\uc694 : \")\n\nprint(f'\uc5d0\ub01e\uc5f0\uc608\uc5d0\uc608\uc5d0\uc608\ud53c. \uc5d0\ud680\uc5f0\uc608 {\uc5d0\uc608\u7531\ud53c}\uc608\uc608\u6028\ud680, {\uc5f0\uc608\uc5d0\uc608}\uc608\uc608\ud550 \uc608\uc608\u6028\ud680 {\ud798\uacf8\ubfbd}\uc5d0\ud589\uc608\ub572\uc608\ub58e.')\n```\n\n```\n\uc5d0\ub01e\uc5f0\uc608\uc5d0\uc608\uc5d0\uc608\ud53c. \uc5d0\ud680\uc5f0\uc608 \u6e90\ud680\u936e\uc3c5\uad79\uc608\uc608\u6028\ud680, 0\uc608\ud550 \uc608\uc608\u6028\ud680 \uc77c\ubea4\uad97\uc5d0\ud589\uc608\ub572\uc608\ub58e.\n\n```\n\n```\n'd:\\\\\uc5d0\uc0a4\uf9dd\ub349\ud42b\uc608\ubd6b \uc608\ub58e\uc608\ubfbd\\\\python'\n```\n\n---\n",
+            "date": "2025-11-03T16:30:33.908744+00:00",
+            "tags": [
+                "\uc5d0\ud53d\u608d\ub600I",
+                "\uc5b4\ud130\uc5d0\ubfbd\uc608\uc608\ud608\u608d"
+            ],
+            "slug": "python-0925",
+            "category": "learning",
+            "author": "\u6e90\ud680\u936e\uc3c5\uad79",
+            "featured": false,
+            "view_count": 0
+        }
+    ]
+}
+

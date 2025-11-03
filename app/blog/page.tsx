@@ -7,12 +7,18 @@ export const metadata = {
 
 async function getBlogPosts() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // Use absolute URL in development, relative in production
+    const isDev = process.env.NODE_ENV === 'development';
+    const baseUrl = isDev
+      ? (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
+      : '';
     const res = await fetch(`${baseUrl}/api/blog/posts?status=published`, {
       cache: 'no-store',
+      next: { revalidate: 0 }
     });
-    
+
     if (!res.ok) {
+      console.error('API response not OK:', res.status);
       return [];
     }
 

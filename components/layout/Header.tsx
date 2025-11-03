@@ -44,8 +44,8 @@ export default function Header() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/services" className="px-4 py-2 text-sm font-medium hover:underline">
-                    서비스
+                  <Link href="/projects" className="px-4 py-2 text-sm font-medium hover:underline">
+                    프로젝트
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -84,8 +84,8 @@ export default function Header() {
               <Link href="/about" className="text-lg font-medium hover:underline">
                 소개
               </Link>
-              <Link href="/services" className="text-lg font-medium hover:underline">
-                서비스
+              <Link href="/projects" className="text-lg font-medium hover:underline">
+                프로젝트
               </Link>
               <Link href="/blog" className="text-lg font-medium hover:underline">
                 블로그

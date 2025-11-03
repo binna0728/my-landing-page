@@ -13,6 +13,10 @@ export async function GET(request: Request) {
 
     // Supabase 환경 변수가 없으면 빈 배열 반환
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      console.error('Supabase 환경변수 누락:', { 
+        hasUrl: !!SUPABASE_URL, 
+        hasKey: !!SUPABASE_ANON_KEY 
+      });
       return NextResponse.json({ posts: [], total: 0 }, { status: 200 });
     }
 
@@ -38,7 +42,8 @@ export async function GET(request: Request) {
     });
 
     if (!response.ok) {
-      console.error('Supabase API error:', response.statusText);
+      const errorText = await response.text().catch(() => 'Unknown error');
+      console.error('Supabase API error:', response.status, response.statusText, errorText);
       return NextResponse.json({ posts: [], total: 0 }, { status: 200 });
     }
 
@@ -74,10 +79,16 @@ export async function GET(request: Request) {
         }
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Blog posts API error:", error);
+    console.error("Error details:", error?.message, error?.stack);
     return NextResponse.json(
-      { posts: [], total: 0, error: "서버 오류가 발생했습니다." },
+      { 
+        posts: [], 
+        total: 0, 
+        error: "서버 오류가 발생했습니다.",
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      },
       { status: 200 }
     );
   }

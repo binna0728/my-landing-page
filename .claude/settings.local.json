@@ -22,7 +22,15 @@
       "Bash(lsof:*)",
       "Bash(tasklist:*)",
       "Bash(for id in {75..58})",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(awk:*)",
+      "Bash(xargs kill:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(do lsof -ti :30$id)",
+      "Bash(for id in {10..0})",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
