@@ -19,6 +19,8 @@ interface BlogPost {
   featured: boolean;
   tags: string[];
   status?: string;
+  publish_date?: string;
+  date?: string;
 }
 
 interface BlogWriteDialogProps {
