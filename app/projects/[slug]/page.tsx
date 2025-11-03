@@ -2,60 +2,42 @@ import React from "react";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { getSupabase } from "@/lib/supabase";
 
 async function getProject(slugOrId: string) {
   // 숫자면 ID로, 아니면 slug로 조회
   const isNumeric = /^\d+$/.test(slugOrId);
   
   try {
-    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabase = getSupabase();
     
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase 환경변수 누락:', {
-        hasUrl: !!SUPABASE_URL,
-        hasKey: !!SUPABASE_ANON_KEY,
-      });
-      return null;
-    }
-
-    // Supabase에 직접 연결
-    let url = `${SUPABASE_URL}/rest/v1/projects?select=*`;
+    let query = supabase.from('projects').select('*');
+    
     if (isNumeric) {
-      url += `&id=eq.${slugOrId}`;
+      query = query.eq('id', slugOrId);
     } else {
-      // slug는 디코딩 후 다시 인코딩
+      // slug는 디코딩
       try {
         const decodedSlug = decodeURIComponent(slugOrId);
-        url += `&slug=eq.${encodeURIComponent(decodedSlug)}`;
+        query = query.eq('slug', decodedSlug);
       } catch {
-        url += `&slug=eq.${encodeURIComponent(slugOrId)}`;
+        query = query.eq('slug', slugOrId);
       }
     }
     
-    const res = await fetch(url, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store',
-    });
+    const { data: projects, error } = await query.limit(1);
     
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => 'Unknown error');
-      console.error('Supabase API error:', {
-        status: res.status,
-        statusText: res.statusText,
-        error: errorText,
-        slugOrId,
-      });
+    if (error) {
+      console.error('Supabase error:', error);
       return null;
     }
     
-    const data = await res.json();
-    const projects = Array.isArray(data) ? data : [];
-    const project = projects[0] || null;
+    if (!projects || projects.length === 0) {
+      console.error(`프로젝트를 찾을 수 없습니다: ${slugOrId} (isNumeric: ${isNumeric})`);
+      return null;
+    }
+    
+    const project = projects[0];
     
     if (!project) {
       console.error(`프로젝트를 찾을 수 없습니다: ${slugOrId} (isNumeric: ${isNumeric})`);

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { getSupabase } from "@/lib/supabase";
 
 export const metadata = {
   title: "블로그 포스트 — AI 헬스케어 초격차 캠프",
@@ -13,48 +14,24 @@ export const metadata = {
 
 async function getBlogPost(slug: string) {
   try {
-    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabase = getSupabase();
     
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase 환경변수 누락:', {
-        hasUrl: !!SUPABASE_URL,
-        hasKey: !!SUPABASE_ANON_KEY,
-      });
+    const { data: posts, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .limit(1);
+
+    if (error) {
+      console.error('Supabase error:', error);
       return null;
     }
 
-    // Supabase에 직접 연결
-    const url = `${SUPABASE_URL}/rest/v1/blog_posts?select=*&slug=eq.${encodeURIComponent(slug)}`;
-    
-    const res = await fetch(url, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store',
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => 'Unknown error');
-      console.error('Supabase API error:', {
-        status: res.status,
-        statusText: res.statusText,
-        error: errorText,
-        slug,
-      });
+    if (!posts || posts.length === 0) {
       return null;
     }
 
-    const data = await res.json();
-    const posts = Array.isArray(data) ? data : [];
-    const post = posts[0] || null;
-
-    if (!post) {
-      console.error(`블로그 포스트를 찾을 수 없습니다: ${slug}`);
-      return null;
-    }
+    const post = posts[0];
 
     // 데이터 형식 변환
     return {
