@@ -2,44 +2,39 @@ import React from "react";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { createClient } from '@supabase/supabase-js';
 
 async function getProject(slugOrId: string) {
   // 숫자면 ID로, 아니면 slug로 조회
   const isNumeric = /^\d+$/.test(slugOrId);
   
   try {
-    // API 라우트를 통해 데이터 가져오기
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://udimchcvervbxcnqjrcl.supabase.co';
+    const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkaW1jaGN2ZXJ2YnhjbnFqcmNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNDUwODUsImV4cCI6MjA3NzcyMTA4NX0.uqd1qFh5tekwi4Sxyb3xrqOyThfJmIeW8phwxOMP8Kg';
     
-    let url = `${baseUrl}/api/projects?status=all`;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    let query = supabase.from('projects').select('*');
+    
     if (isNumeric) {
-      url += `&id=${slugOrId}`;
+      query = query.eq('id', slugOrId);
     } else {
       try {
         const decodedSlug = decodeURIComponent(slugOrId);
-        url += `&slug=${encodeURIComponent(decodedSlug)}`;
+        query = query.eq('slug', decodedSlug);
       } catch {
-        url += `&slug=${encodeURIComponent(slugOrId)}`;
+        query = query.eq('slug', slugOrId);
       }
     }
     
-    const res = await fetch(url, {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { data: projects, error } = await query.limit(1);
     
-    if (!res.ok) {
-      console.error('API response not OK:', res.status, res.statusText);
+    if (error) {
+      console.error('Supabase error:', error);
       return null;
     }
     
-    const data = await res.json();
-    const projects = data.projects || [];
-    
-    if (projects.length === 0) {
+    if (!projects || projects.length === 0) {
       console.error(`프로젝트를 찾을 수 없습니다: ${slugOrId} (isNumeric: ${isNumeric})`);
       return null;
     }
