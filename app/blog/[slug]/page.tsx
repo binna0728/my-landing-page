@@ -12,6 +12,10 @@ export const metadata = {
   description: "블로그 포스트 상세 페이지",
 };
 
+// 동적 렌더링 강제
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getBlogPost(slug: string) {
   try {
     const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://udimchcvervbxcnqjrcl.supabase.co';

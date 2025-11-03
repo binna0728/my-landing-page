@@ -4,6 +4,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { createClient } from '@supabase/supabase-js';
 
+// 동적 렌더링 강제
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getProject(slugOrId: string) {
   // 숫자면 ID로, 아니면 slug로 조회
   const isNumeric = /^\d+$/.test(slugOrId);

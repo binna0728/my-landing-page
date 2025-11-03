@@ -6,6 +6,10 @@ export const metadata = {
   description: "기술 블로그 포스트 모음",
 };
 
+// 동적 렌더링 강제 (SSR)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getBlogPosts() {
   try {
     // 환경변수 확인
@@ -14,9 +18,10 @@ async function getBlogPosts() {
     
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
+    // content 필드는 제외하고 필요한 필드만 가져오기
     const { data: posts, error } = await supabase
       .from('blog_posts')
-      .select('*')
+      .select('id, title, description, excerpt, publish_date, created_at, tags, slug, category, author, featured, status, view_count')
       .eq('status', 'published')
       .order('publish_date', { ascending: false });
 
@@ -34,7 +39,6 @@ async function getBlogPosts() {
       id: post.id,
       title: post.title,
       description: post.description || post.excerpt || '',
-      content: post.content,
       date: post.publish_date || post.created_at,
       tags: post.tags || [],
       slug: post.slug,
