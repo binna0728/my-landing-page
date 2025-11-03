@@ -7,12 +7,15 @@ export const metadata = {
 
 async function getBlogPosts() {
   try {
-    // Use absolute URL in development, relative in production
-    const isDev = process.env.NODE_ENV === 'development';
-    const baseUrl = isDev
-      ? (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000')
-      : '';
-    const res = await fetch(`${baseUrl}/api/blog/posts?status=published`, {
+    // 서버 컴포넌트에서는 절대 URL 필요
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+      (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '');
+    
+    const url = baseUrl 
+      ? `${baseUrl}/api/blog/posts?status=published`
+      : '/api/blog/posts?status=published';
+    
+    const res = await fetch(url, {
       cache: 'no-store',
       next: { revalidate: 0 }
     });
