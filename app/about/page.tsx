@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Code, Target, Heart } from "lucide-react";
+import { GraduationCap, Code, Target, Heart, BookOpen } from "lucide-react";
 import Image from "next/image";
 
 export const metadata = {
@@ -236,6 +236,41 @@ export default function AboutPage() {
               <li className="flex items-start">
                 <span className="mr-2">•</span>
                 <span>의료 AI의 윤리적 사용과 사람 중심 설계 방향 탐색</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* 연구 논문 섹션 */}
+        <Card className="mb-12">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              <CardTitle>연구 논문</CardTitle>
+            </div>
+            <CardDescription>RESEARCH</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-4 text-muted-foreground">
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <div>
+                  <span className="text-foreground font-medium">
+                    Deep learning-based diagnosis of lung cancer using a nationwide respiratory cytology image set
+                  </span>
+                  <br />
+                  <span className="text-sm">American Journal of Cancer Research, 2023</span>
+                </div>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <div>
+                  <span className="text-foreground font-medium">
+                    Large-Scale Dermatopathology Dataset for Lesion Segmentation
+                  </span>
+                  <br />
+                  <span className="text-sm">Journal of Korean Medical Science, 게재 예정 2025</span>
+                </div>
               </li>
             </ul>
           </CardContent>
